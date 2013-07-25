@@ -1,0 +1,37 @@
+GetTitle script ReadMe
+======================
+
+Purpose
+^^^^^^^
+This is a rexx script used by the Z! Monitor widget to retrieve the
+title of the current song for those internet radio stations that don't
+return the song title embedded in the stream.
+
+I don't know exactly why they do it... I once thought it was some kind of
+technical limitation, but now I've seen that there are radio stations which
+actually return the title (e.g. www.mostlyclassical.com).
+
+BTW, rather than keeping my browser open, I've developed this small script
+that will parse a home page and extract the title, and then feed it to the 
+widget.
+
+
+Setup
+^^^^^
+Setup is easy, you just need to look at the HTML code of the page which lists
+the current song. To get you started, two examples are given: for RadioParadise
+and for WolfFM.
+
+The name of the setup file is derived from the URL of the radio's home page
+(e.g. radioparadise for www.radioparadise.com, and wolffm for www.wolffm.com).
+Look at the examples for more infos.
+
+
+Final words
+^^^^^^^^^^^
+I hope you'll enjoy it.
+
+If you write more setups for other radio stations, please send them to me and
+I'll include them in the distribution.
+
+

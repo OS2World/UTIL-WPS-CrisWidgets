@@ -1,0 +1,142 @@
+Cris' Widgets History of changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Version 0.8
+===========
+
+. This release only fixes two small bugs in the installation program.
+  There has never been a public release of version 0.7.
+
+
+Version 0.7
+===========
+
+. Finally we have an INSTALLER!! You don't have to manually enter the code
+  any more (unless you have an old release of XWP).
+
+. Updated the "wider" setup for the Z! Controller widget. Now it is at the
+  same level as the main code.
+  
+. Enhanced parser for internet radio stations: now correctly separates title
+  from author (if possible).
+  
+. Z! Controller now automatically retrieves titles for internet radio stations
+  that don't report them (but you still have to write setups for your preferred
+  radio stations... WolfFM and RadioParadise are given as examples).
+  
+. New directive in the setup for internet radio stations: now you can add code
+  to parse the returned title to remove garbage etc. See the setup for Radio
+  Paradise for an example.
+
+. Cliff Brady contributed (again! Thnx Cliff) a new method of querying titles
+  via the RxSocks library. This method is more integrated, does not require
+  external tools like WGet, and uses less CPU and memory. BTW, I'm not able
+  to use it because I am behind a firewall and need to go through a proxy.
+  If anyone knows how to go through a proxy using RxSocks, I will be VERY glad
+  to hear from you (and if you can code some rexx... ;-)).
+  The installer asks you which method do you want to use.
+
+. Reworked the ReadMe file. Removed most obsolete/redundant information. If
+  you want to know about new features and bug fixes, look though this file from
+  now on.
+
+. Redesigned icons for the PM123 and CDPlay widgets.
+
+. Visual separator between the time area and the title area. Now Z! Monitor is
+  even nicer than before! ;-)
+  
+. Z! Monitor now displays a visual indicator when it is retrieving titles from
+  the web rather than directly from the stream (a small leftwards arrow next
+  to the title).
+  
+. Nicer display of playing time (formatted).
+
+
+Version 0.6
+===========
+
+. Thanx to some ideas and code from Sushenjit Bandyopadhyay, Z! widgets have
+  been updated again. Thankyou Sushenjit!
+  Also two new widgets have been provided by Cliff Brady. Thankyou Cliff!
+
+. Fixed a bug when streaming that crashed Z! Monitor
+
+. Time gauge is now always 100% full when streaming from the Internet
+
+. When playing time > 59m, it displays hours:minutes (again useful when 
+  streaming from the Internet)
+  
+. Now starts Z! when something is dropped on the controller
+  (contributed by S.B.)
+
+. Now you can drop directories, playlists and MP3s on the controller
+  (everything that is not a directory or an MP3 file will be considered
+  a playlist) (partly contributed by S.B.)
+  
+. On directory drop, the widget will scan the directory and all 
+  subdirectories recursively and add to the playlist all the MP3s it 
+  can find (partly contributed by S.B.)
+
+. New function for internet radio stations that don't return the song title: if
+  the widget finds a file called "force-title.txt" in Z!'s directory, it will
+  read the first line and use it instead of the title returned from Z!
+  I'm providing a script and two sample configs for "Radio Paradise" and
+  "WolfFM". The script uses wget to retrieve the home page and then scans it 
+  to retrieve the current song title. Look in the "zctrl\scripts" subdirectory.
+  A minor glitch is that, since titles are updated in real-time, you'll get
+  the title of the next song before you actually hear it. The bigger your
+  buffer is, the longer will be the delay.
+  
+. Added CDPlay controller widget (contributed by Cliff Brady)
+
+. Added PM123 controller widget (contributed by Cliff Brady)
+
+
+Version 0.5
+===========
+
+. Thanx to some code and ideas from Martin Lafaix, Z! widgets have been
+  greatly enhanced!! Thankyou Martin! 
+  
+  See below for some great news:
+  
+. Z! Monitor shows the running time beneith the title
+
+. Z! Monitor shows a progress-bar indicating the percentage of the song
+
+. Updated Z! Monitor's tooltip to show song title, album, author, total playing
+  time
+  
+. Z! Controller will start Z! if not running when a file is dropped on it
+
+. Updated Z! Monitor's strings when Z! is not running or not playing to be more
+  informative
+  
+. Z! Controller shows volume level in its tooltip (*)
+
+. Z! Controller shows volume level as a red bar in its icon (*)
+
+(*) These features require an updated release of Z!, that may still not be
+    available at present time (see http://dink.org).
+
+
+Version 0.4
+===========
+
+. Added Z! Controller Monitor.
+
+. Corrected a bug in Z! Controller: when dropping a playlist it did not start
+  playing.
+
+. Added an alternative wider setup for the main Z! Controller widget.
+
+. Corrected percentage calculation in Swap Monitor.
+
+. Swap Monitor now changes barchart color when swap grows.
+
+
+Version 0.3 and previous
+========================
+
+. Who knows? I don't remember anymore... :-)
+

@@ -1,0 +1,6 @@
+                  Now Playing:</b>
+2
+TheTitle = Left(TheTitle, pos('nbsp', TheTitle) - 2)
+
+    Partly contributed by Cliff Brady
+

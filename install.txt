@@ -1,0 +1,51 @@
+Installing Cris Widgets v0.8
+============================
+
+Installation is very simple now that we have an real installer ;-)
+
+Simply unzip the archive (if you use PKZIP remember to let it create
+directories!) into a temporary directory. 
+
+Then run "cwinst.cmd" and follow the directions. The installer will autodetect
+all the values that it can, and will ask for those it can't.
+
+The installer will customize ALL the widgets for you, even if you don't want
+to install them all. You can reply with bogus answers if you feel so (e.g. if
+you don't have Z! installed, and you don't want to install the Z! widgets,
+simply reply with a fictitious directory, and tell the installer not to copy
+files).
+
+At the end, the installer will open two folders: one with documentation, and
+another with the customized widgets. Simply ctr+drag (that is: hold down the
+CTRL key while dragging) the widgets on an empty spot on the XCenter, and 
+you're done. You'll probably want to keep the "Z! Controller" and the 
+"Z! Monitor" together.
+
+Once done, you can safely delete the temporary directory. You may want to copy
+the documentation files somewhere, BTW.
+
+------------------------------------------------------------------------------
+NOTE: (for those with older versions of XWP)
+
+If you don't have XWP 0.9.14 you won't be able to drag the widgets to the
+XCenter. You'll have to use the old "manual" installation. That is, you'll
+have to edit the files to enter your preferences, then install a few rexx 
+buttons and rexx gauges, and finally manually copy the code in those widgets.
+
+The files to be customized are found in the "obsolete" directory. You have to
+customize the gettitle.cmd script also.
+
+BTW, you may want to run the install program anyway, because it will copy 
+the needed support files (icons, etc) to their directories, and will report 
+autodetected values for your convenience. If you run it, it will customize
+the gettitle.cmd script for you.
+
+Here is a little reference for the creation of widgets:
+
+Z! Controller:		install a rexx button (2 rexx buttons for the "wider" setup)
+Z! Monitor:			install a rexx gauge
+Swap Monitor:		install a rexx gauge
+Clock:				install a rexx gauge
+
+The default icon(s) for the Z! Controller must be located in the
+\XWorkplace\plugins\XCenter directory.

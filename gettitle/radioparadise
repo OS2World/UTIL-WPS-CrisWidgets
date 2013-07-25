@@ -1,0 +1,21 @@
+<b>Now Playing:</b><a href=
+1
+TheTitle = Left(TheTitle, Length(TheTitle) - 8)
+
+    The first line represents the line (or the first part of the line) that
+    *uniquely* identifies the section of the webpage where the title is stored
+    (from now on called "identifier").
+
+    The second line means how many lines to skip, after the identifier, to
+    find the title. "1" means that the title is on the line immediately
+    following the identifier.
+
+    The third (optional) line is the rexx code (maybe) needed to clean-up the
+    title from extraneous characters, like HTML tags and the like. This must
+    be on one line (but you can use semicolons to separate multiple statements)
+    and the actual title read from the web page is in the "TheTitle" variable.
+    It must follow the rules for the "interpret" statement in rexx (see the
+    rexx reference for more infos). If you don't want or need this line,
+    simply leave it empty.
+
+    Subsequent lines are not read at all, so you can write what you want here.

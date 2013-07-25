@@ -1,0 +1,30 @@
+                          Upload Information Template for Hobbes.nmsu.edu
+                          ===============================================
+
+        Archive Filename: cwdgts08.zip
+       Short Description: An XCenter widget to control Z!, and four other widgets.
+        Long Description: An XCenter widget to control Z! Also a few other
+                          widgets (clock, swapper monitor, cdplay, pm123).
+                          XCenter is the WarpCenter replacement included in
+                          XWorkplace 0.9.8+.
+
+      Proposed directory
+           for placement: /pub/os2/util/system
+
+               Your name: Cristiano Guadagnino
+           Email address: criguada _at_ libero _dot_ it
+    Program contact name: (same)
+   Program contact email: (same)
+             Program URL: http://www.quasarbbs.net/cristiano/smalltools.html
+
+      Would you like the
+   contact email address
+    included in listings? yes
+
+Operating System/Version: OS/2 Warp+
+ Additional requirements: XWorkplace 0.9.8+, Warpin 0.9.8+, Lafaix' Widget Library 0.5.2+
+
+                Replaces: cwdgts06.zip, cwdgts05.zip, cwdgts04.zip, cwdgts03.zip
+
+
+
