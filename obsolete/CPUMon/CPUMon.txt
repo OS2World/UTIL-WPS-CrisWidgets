@@ -1,0 +1,26 @@
+/************************************************************************/
+/* CPU MONITOR IS OBSOLETE AS OF XWP v0.9.14, WHICH CONTAINS A WORKING  */
+/* IMPLEMENTATION OF THE STANDARD CPU MONITOR WIDGET.                   */
+/************************************************************************/
+
+/* CPU Monitor widget */
+
+if RxFuncQuery('RxQpLoadFuncs') then do
+	rc = RxFuncAdd('RxQpLoadFuncs', 'RXPERFDL', 'RxQpLoadFuncs')
+	if rc = 0 then call RxQpLoadFuncs
+end
+
+nl = '0D0A'x
+
+if RxQueryPerformance('Perf') = 0 then do
+	gauge.2 = format(Perf.Overall.fxBusyRatio/65536, 3, 0)
+	gauge.1 = format(Perf.Overall.fxInterruptRatio/65536, 3, 0)
+	gauge.text = format(Perf.Overall.fxBusyRatio/65536, 3, 1) || '%'
+	gauge.tooltip = 	'CPU load' || nl || 'User: ' ||,
+			 format(Perf.Overall.fxBusyRatio/65536, 3, 2) ||,
+			'%' || nl || 'IRQ: ' ||,
+			format(Perf.Overall.fxInterruptRatio/65536, 3, 2) ||,
+			'%'
+end; else do
+	gauge.text = '(error)'
+end

@@ -1,0 +1,73 @@
+Title: Swap Space Monitor
+======
+
+Refresh rate: 5000 ms
+=============
+
+Gauge width: 40 pixels (fixed)
+============
+
+Rexx code: (Gauge script)
+=========================
+
+/* Swap monitor */
+
+/* -- User configurable section   ---------------------------- */
+SwapperDrive = 'E:'
+SwapperPath = '\os2\system'
+SwapMinFree = 30720
+SwapInit = 76800
+/* -- Do not edit below this line! --------------------------- */
+
+
+if RxFuncQuery('SysLoadFuncs') then do
+	call RxFuncAdd 'SysLoadFuncs','RexxUtil','SysLoadFuncs'
+	call SysLoadFuncs
+end
+  
+parse value SysDriveInfo(SwapperDrive) with dsk free total label
+
+TheFile = SwapperDrive || SwapperPath || '\swapper.dat'
+size = stream(TheFile, 'c', 'query size')
+
+swsize = ((size / 1024) / 1024)
+gauge.tooltip = 'Swapper size: ' || swsize || 'Mb'
+
+SwapInit2 = SwapInit * 1024
+t_init = 100 * (SwapInit2 / (free + SwapInit2 - (SwapMinFree * 1024)))
+t_init = format(t_init, 2, 0)
+
+t = 100 * (size / (free + size - (SwapMinFree * 1024)))
+t = format(t, 2, 0)
+
+select
+	when t <= t_init then
+		gauge.1 = t
+	when ((t <= 90) & (t > t_init)) then do
+		gauge.1 = t_init
+		gauge.2 = t
+		gauge.foreground = '0000FF'
+	end
+	otherwise
+		gauge.1 = t_init
+		gauge.2 = 90
+		gauge.3 = t
+		gauge.foreground = 'FF0000'
+end
+
+gauge.text = t'%'
+
+
+Rexx code: (Double click action)
+================================
+
+/* OS/2 Kernel settings notebook */
+  
+if RxFuncQuery('SysLoadFuncs') then do
+	call RxFuncAdd 'SysLoadFuncs','RexxUtil','SysLoadFuncs'
+	call SysLoadFuncs
+end
+  
+call SysSetObjectData '<XWP_KERNEL>', 'OPEN=SETTINGS'
+
+

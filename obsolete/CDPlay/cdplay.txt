@@ -1,0 +1,39 @@
+/* Play CD mini controller  */
+PosX = Arg(1)
+PosY = Arg(2)
+PipeName = '\pipe\cdp00'
+if PosY >= 50 then do
+        select
+            when PosX <= 33 then do
+                rc = lineout(PipeName, 'prev')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when (PosX > 33) & (PosX <= 66) then do
+                rc = lineout(PipeName, 'play')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when PosX > 66 then do
+                rc = lineout(PipeName, 'next')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            otherwise
+                nop
+        end
+    end; else do
+        select
+            when PosX <= 33 then do
+                rc = lineout(PipeName, 'prev')
+                rc = stream(PipeName, 'C', 'RW')
+            end
+            when (PosX > 33) & (PosX <= 66) then do
+                rc = lineout(PipeName, 'pause')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when PosX > 66 then do
+                rc = lineout(PipeName, 'FF')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            otherwise
+                nop
+        end
+    end

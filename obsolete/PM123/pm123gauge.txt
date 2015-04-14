@@ -1,0 +1,60 @@
+/*PM123 Controller */
+
+PosX = Arg(1)
+PosY = Arg(2)
+PipeName = '\pipe\pm123'
+
+if DragItem.0 = 0 then
+    if PosY >= 50 then do
+        select
+            when PosX <= 16  then do
+                rc = lineout(PipeName, '*pause on')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when (PosX >16) & (PosX <= 32)  then do
+                rc = lineout(PipeName, '*pause off')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when (PosX > 33) & (PosX <= 66) then do
+                rc = lineout(PipeName, '*stop')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when PosX > 66 then do
+                rc = lineout(PipeName, '*volume ' || PosY)
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            otherwise
+                nop
+        end
+    end; else do
+        select
+            when PosX <= 33 then do
+                rc = lineout(PipeName, '*previous')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when (PosX > 33) & (PosX <= 66) then do
+                rc = lineout(PipeName, '*next')
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            when PosX > 66 then do
+                rc = lineout(PipeName, '*volume ' || PosY)
+                rc = stream(PipeName, 'C', 'CLOSE')
+            end
+            otherwise
+                nop
+        end  
+  end
+else do
+    do F = 1 to DragItem.0
+        if (Right(FileSpec('name', DragItem.F), 3) = 'mp3')|,
+           (Right(FileSpec('name', DragItem.F), 3) = 'MP3')
+        then
+            message = '*add ' || DragItem.F
+        else
+            message = '*use ' || DragItem.F
+
+        rc = lineout(PipeName, message)
+        rc = stream(PipeName, 'C', 'CLOSE')
+    end F
+end
+

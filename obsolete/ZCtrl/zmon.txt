@@ -1,0 +1,210 @@
+Title: Z! Monitor
+======
+
+Tips:
+=====
+If you want the widget to look correctly, use a fixed-width font.
+I'm using 5.SystemVIO, but this may not be the best choice if you run
+at a different resolution than mine (I'm running at 1024x768).
+
+Please, remember to customize the script before copying it to the
+widget. You need only customize the section between markers.
+
+Non-obvious values:
+
+    ScrollFactor:   It is the number of characters from the song title
+                    that will be displayed in the widget. If the title
+                    is longer than this, it will begin scrolling.
+
+    TimeWidth:      It is the width of the section containing the
+                    running elapsed time. If you use a font different
+                    than mine, you will probably have to change this.
+                    Setting this up requires a bit of trial-and-error.
+
+
+Refresh rate: 1000 ms
+=============
+
+Gauge width: 100 pixels (fixed)
+============
+
+Gauge colors:
+=============
+1.0000FF (light blue)
+2.000080 (dark blue)
+3.CCCCCC (light grey)
+
+
+Rexx code: (Gauge script)
+=========================
+
+/* Z! Controller - monitor */
+
+signal on error name TrapErr
+signal on syntax name TrapErr
+signal on failure name TrapErr
+signal on halt name TrapErr
+
+/* -- User configuration Section -------------- */
+ScrollFactor = 10
+TimeWidth = 35
+ZPath = 'E:\MYAPPS\Z\'
+/* -- End User Configuration ---------------- */
+
+PipeName = '\pipe\zmp3'
+nl = '0D0A'x
+
+gauge.1 = 0
+gauge.background = '000000'
+
+status = stream(PipeName, 'C', 'OPEN')
+if status \= 'READY:' then do
+	rc = stream(PipeName, 'C', 'CLOSE')
+	if gauge.user \= '' then do
+		gauge.user = ''
+		exit
+	end
+	gauge.text = '(Z! not running)'
+	gauge.tooltip = ''
+	gauge.user = ''
+	exit
+end
+
+rc = lineout(PipeName, '*rawinfo')
+rawinfo = linein(PipeName)
+rc = stream(PipeName, 'C', 'CLOSE')
+
+name = clean(substr(rawinfo, 1, 256))
+if name \= '' then do
+	songinfo = clean(substr(rawinfo, 257, 256))
+	forcedttl = linein(ZPath||'force-title.txt', 1, 1)
+	if forcedttl = '' then do
+		track = clean(substr(rawinfo, 513, 128))
+		artist = clean(substr(rawinfo, 641, 128))
+	end; else do
+		parse value forcedttl with artist '- ' track
+		if track = '' then do
+			track = artist
+			artist = clean(substr(rawinfo, 641, 128))
+		end
+	end
+
+	album = clean(substr(rawinfo, 769, 128))
+	if Left(album, 7) = 'http://' then call InetRadio
+
+	playtime = clean(substr(rawinfo, 1031, 10))
+	timenow = clean(substr(rawinfo, 1041, 10))
+
+	gauge.2 = TimeWidth
+	gauge.3 = TimeWidth + 2
+
+	gauge.tooltip = 	'track:' track nl||,
+			'artist:' artist nl||,
+			'album:' album nl||,
+			'playing time:' playtime
+
+	if playtime \= '' then do
+		parse var playtime mm ':' ss
+		splaytime = mm*60+ss
+		if  timenow \= '' then do
+			parse var timenow mm ':' ss
+			stimenow = mm*60+ss
+			if splaytime \= 0 then
+				gauge.1 = gauge.2 * stimenow % splaytime
+			else
+				gauge.1 = gauge.2
+
+			if mm > 59 then do
+				hh = mm % 60
+				hh = beautify(hh)
+				mm = beautify(mm - (60 * hh))
+				timenow = hh || ':' || mm
+			end; else do
+				mm = beautify(mm)
+				ss = beautify(ss)
+				timenow = mm || ':' || ss
+			end
+			gauge.text = timenow || ' ' || scroller(track)
+		end
+	end
+end; else do
+	gauge.2 = 0
+	gauge.3 = 0
+	gauge.text = '(not playing)'
+	gauge.user = 1
+end
+
+exit
+
+scroller: procedure expose ScrollFactor gauge. forcedttl
+	ScrollText = arg(1)
+	ScrollInit = gauge.user
+	if forcedttl \= '' then ScrollFactor = ScrollFactor - 2
+	if (ScrollInit = '') | ,
+	   (ScrollInit > (length(ScrollText) - ScrollFactor))
+	then
+		ScrollInit = 1
+	else
+		ScrollInit = ScrollInit + 1
+
+	gauge.user = ScrollInit
+	if forcedttl \= '' then
+		return substr(ScrollText, ScrollInit, ScrollFactor) || ' '
+	else
+		return substr(ScrollText, ScrollInit, ScrollFactor)
+
+InetRadio: procedure expose album ZPath
+	Env = 'OS2ENVIRONMENT'
+	if (Value('ZCRT',,Env) = '') |,
+	   (Value('ZCRT',,Env) \= album)
+	then do
+		Radio = Right(album, Length(album) - 7)
+		CurDir = directory()
+		call directory strip(ZPath, 'T', '\')
+		'@detach ' || ZPAth || 'gettitle.cmd ' || Radio
+		call directory CurDir
+		call Value 'ZCRT', album, Env
+	end
+	return
+
+clean:
+	return strip(arg(1), , '0'x)
+
+beautify: procedure
+	aText = arg(1)
+	aText = format(aText, 2, 0)
+	aText = translate(aText, '0', ' ')
+	return aText
+
+TrapErr:
+    nl = '0D0A'x
+    ErrMsg = 'An error occurred in the script. See below for details:'
+    ErrMsg = ErrMsg || nl || nl
+    ErrMsg = ErrMsg || 'Error: ' || rc || nl
+    ErrMsg = ErrMsg || 'Description: ' ErrorText(rc) || nl
+    ErrMsg = ErrMsg || 'Condition: ' Condition('C') || nl
+    ErrMsg = ErrMsg || 'Line: ' SIGL || nl
+    ErrMsg = ErrMsg || 'Code: ' SourceLine(SIGL)
+    ErrMsg = ErrMsg || nl || nl
+    ErrMsg = ErrMsg || 'Please send this info to <criguada@libero.it>' || nl
+    ErrMsg = ErrMsg || nl || nl
+    ErrMsg = ErrMsg || 'The program will now simulate another error, '
+    ErrMsg = ErrMsg || 'so that your script will stop running.'
+    rc = RxMessageBox(ErrMsg, 'Script error', 'OK', 'ERROR')
+    rc = 1/0
+    exit
+
+
+Rexx code: (Double click action)
+================================
+
+/* Double-click action for Z! Controller Monitor */
+rc = RxFuncAdd('SysLoadFuncs', 'RexxUtil', 'SysLoadFuncs')
+if rc = 0 then call SysLoadFuncs
+
+/* -- User configuration Section -------------- */
+ZPath = 'E:\MYAPPS\Z\Z.EXE'
+/* -- End User Configuration ---------------- */
+
+rc = SysOpenObject(ZPath, DEFAULT, TRUE)
+

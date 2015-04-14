@@ -1,0 +1,176 @@
+Title: Z! Controller
+======
+
+Tips:
+=====
+Please, remember to customize the script before copying it to the
+widget. You need only customize the section between markers.
+
+To make the new volume control functional, you have to copy the
+icons named zctrl?.ico (where '?' represents a number between 0
+and 20) to the same directory where z.exe is stored.
+
+
+Drop settings: 
+==============
+
+Must be set to "Can drop one file or more".
+
+
+Rexx code:
+==========
+
+/* Z! mini controller */
+
+signal on error name TrapErr
+signal on syntax name TrapErr
+signal on failure name TrapErr
+signal on halt name TrapErr
+
+/* -- User configuration Section -------------- */
+ZPath = 'E:\MYAPPS\Z\'
+/* -- End User Configuration ---------------- */
+
+rc = RxFuncAdd('SysLoadFuncs', 'RexxUtil', 'SysLoadFuncs')
+if rc = 0 then call SysLoadFuncs
+
+PosX = Arg(1)
+PosY = Arg(2)
+PipeName = '\pipe\zmp3'
+
+if DragItem.0 = 0 then
+    if PosY >= 50 then do
+        select
+            when PosX <= 33 then do
+                rc = lineout(PipeName, '*pause')
+                rc = stream(PipeName, 'C', 'CLOSE')
+                call SetVol
+            end
+            when (PosX > 33) & (PosX <= 66) then do
+                rc = lineout(PipeName, '*stop')
+                rc = stream(PipeName, 'C', 'CLOSE')
+                call KillGT
+            end
+            when PosX > 66 then do
+                rc = lineout(PipeName, '*vol+')
+                rc = stream(PipeName, 'C', 'CLOSE')
+                call SetVol
+            end
+            otherwise
+                nop
+        end
+    end; else do
+        select
+            when PosX <= 33 then do
+                rc = lineout(PipeName, '*previous')
+                rc = stream(PipeName, 'C', 'CLOSE')
+                call SetVol
+            end
+            when (PosX > 33) & (PosX <= 66) then do
+                rc = lineout(PipeName, '*next')
+                rc = stream(PipeName, 'C', 'CLOSE')
+                call SetVol
+            end
+            when PosX > 66 then do
+                rc = lineout(PipeName, '*vol-')
+                rc = stream(PipeName, 'C', 'CLOSE')
+                call SetVol
+            end
+            otherwise
+                nop
+        end
+    end
+else do
+    call LaunchZ
+    SongsList = ''
+    do F = 1 to DragItem.0
+        rc = SysfileTree(DragItem.F, DropDir, 'DO')
+        ItemExt = Translate(Right(FileSpec('name', DragItem.F), 3))
+        select
+            when DropDir.0 = 1 then do
+                rc = SysfileTree(DropDir.1 || '\*.mp3', DirItem, 'FOS')
+                do D = 1 to DirItem.0
+                    rc = Enqueue(DirItem.D)
+                end D
+            end
+            when ItemExt = 'MP3' then do
+                rc = Enqueue(strip(DragItem.F))
+            end
+            otherwise
+                do while lines(DragItem.F)
+                    listline = linein(DragItem.F)
+                    rc = Enqueue(listline)
+                end /* do..while */
+        end /* select */
+    end F
+
+    message = '*addliststr ' || SongsList
+    rc = lineout(PipeName, message)
+    rc = stream(PipeName, 'C', 'CLOSE')
+    call SysSleep 1
+
+    message = '*play'
+    rc = lineout(PipeName, message)
+    rc = stream(PipeName, 'C', 'CLOSE')
+
+    call SetVol
+end
+
+exit
+
+LaunchZ: procedure expose PipeName ZPath
+    status = stream(PipeName, 'C', 'OPEN')
+    if status \= 'READY:' then call SysOpenObject ZPath||'z.exe', DEFAULT, TRUE
+    rc = SysSleep(1)
+    return ''
+
+KillGT: procedure expose ZPath
+    call Value 'ZCRT', '', 'OS2ENVIRONMENT'
+    if linein(ZPath || 'gt_alive') \= '' then do
+        call lineout ZPath || 'gt_alive'
+        call lineout ZPath || 'gt_kill', 'kill'
+        call lineout ZPath || 'gt_kill'
+    end
+    return ''
+
+SetVol: procedure expose PipeName ZPath button.
+    rc = SysSleep(1)
+    rc = lineout(PipeName, '*status volume')
+    zvol = linein(PipeName)
+    rc = stream(PipeName, 'C', 'CLOSE')
+    if zvol \= '' then do
+        button.icon = ZPath || 'zctrl' || (zvol % 5) || '.ico'
+        button.tooltip = 'Volume: ' || zvol || '%'
+    end; else do
+        button.icon = ZPath || 'zctrl0.ico'
+        button.tooltip = ''
+    end
+    return ''
+
+Enqueue: procedure expose SongsList
+    if SongsList = '' then
+        SongsList = arg(1)
+    else
+        SongsList = SongsList || ';' || arg(1)
+
+    return ''
+
+TrapErr:
+    nl = '0D0A'x
+    ErrMsg = 'An error occurred in the script. See below for details:'
+    ErrMsg = ErrMsg || nl || nl
+    ErrMsg = ErrMsg || 'Error: ' || rc || nl
+    ErrMsg = ErrMsg || 'Description: ' ErrorText(rc) || nl
+    ErrMsg = ErrMsg || 'Condition: ' Condition('C') || nl
+    ErrMsg = ErrMsg || 'Line: ' SIGL || nl
+    ErrMsg = ErrMsg || 'Code: ' SourceLine(SIGL)
+    ErrMsg = ErrMsg || nl || nl
+    ErrMsg = ErrMsg || 'Please send this info to <criguada@libero.it>' || nl
+    ErrMsg = ErrMsg || nl || nl
+    ErrMsg = ErrMsg || 'The program will now simulate another error, '
+    ErrMsg = ErrMsg || 'so that your script will stop running.'
+    rc = RxMessageBox(ErrMsg, 'Script error', 'OK', 'ERROR')
+    rc = 1/0
+    exit
+
+

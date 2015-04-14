@@ -1,0 +1,49 @@
+Title: Clock
+======
+
+Refresh rate: 2000 ms
+=============
+
+Gauge width: 50 pixels (fixed)
+============
+
+Rexx code: (Gauge script)
+=========================
+
+/* Clock */
+
+gauge.tooltip = date('W') || ', ' || date()
+
+parse value time() with _hours ':' _minutes ':' rest
+gauge.text = _hours || ':' || _minutes
+
+/*
+ * Hour  0         1         2
+ *       012345678901234567890123
+ * Color 333333322111111112233333
+ *
+ */
+select
+	when time('H') < 7 | time('H') > 19 then
+		gauge.3 = 100
+	when time('H') < 9 | time('H') > 17 then
+		gauge.2 = 100
+	otherwise
+		gauge.1 = 100
+end
+
+
+
+Rexx code: (Double click action)
+================================
+
+/* Clock settings notebook */
+  
+if RxFuncQuery('SysLoadFuncs') then do
+	call RxFuncAdd 'SysLoadFuncs','RexxUtil','SysLoadFuncs'
+	call SysLoadFuncs
+end
+  
+call SysSetObjectData '<WP_CLOCK>', 'OPEN=SETTINGS'
+
+
